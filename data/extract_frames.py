@@ -26,7 +26,7 @@ if __name__ == "__main__":
     print(opt)
 
     time_left = 0
-    video_paths = glob.glob(os.path.join(opt.dataset_path, "*", "*.avi"))
+    video_paths = glob.glob(os.path.join(opt.dataset_path, "*", "*.mp4"))
     for i, video_path in enumerate(video_paths):
         sequence_type, sequence_name = video_path.split(".avi")[0].split("/")[-2:]
         sequence_path = os.path.join(f"{opt.dataset_path}-frames", sequence_type, sequence_name)
