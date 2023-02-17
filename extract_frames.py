@@ -12,7 +12,8 @@ def dump_video_frames(path_to_video_file, folder_for_frames):
     video_file_name = os.path.splitext(video_file_name)[0].lower()
 
     # setup frame folders
-    os.mkdir(os.path.join(folder_for_frames, video_file_name))
+    dest_folder = os.path.join(folder_for_frames, video_file_name)
+    os.makedirs(dest_folder)
 
     # read video using opencv
     video = cv2.VideoCapture(path_to_video_file)
@@ -29,7 +30,7 @@ def dump_video_frames(path_to_video_file, folder_for_frames):
         success, image = video.read()
 
         # save frame
-        the_frame = os.path.join(folder_for_frames, f"frame{count}.jpg")
+        the_frame = os.path.join(dest_folder, f"frame{count}.jpg")
         try:
             cv2.imwrite(the_frame, image)
             count += 1
@@ -47,16 +48,16 @@ def main():
         basename = os.path.basename(root)
 
         for video in files:
-            filename, ext = os.path.split(video)
+            filename, ext = os.path.splitext(video)
 
             if ext.lower() not in support_extensions:
                 continue
 
+            print(f"Processing file: {video}")
             dump_video_frames(
                 os.path.join(root, video), os.path.join(frame_path, basename)
             )
 
 
 if __name__ == "__main__":
-    # FrameCapture("/home/fengxia/Downloads/Sniffing_537.mp4", "./tmp")
     main()
