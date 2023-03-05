@@ -29,7 +29,7 @@ class Dataset(Dataset):
             ]
         )
 
-    def _extract_label_mapping(self, split_path="data/ucfTrainTestlist"):
+    def _extract_label_mapping(self, split_path="data/miceTrainTestlist"):
         """ Extracts a mapping between activity name and softmax index """
         with open(os.path.join(split_path, "classInd.txt")) as file:
             lines = file.read().splitlines()
@@ -40,17 +40,17 @@ class Dataset(Dataset):
         return label_mapping
 
     def _extract_sequence_paths(
-        self, dataset_path, split_path="data/ucfTrainTestlist", split_number=1, training=True
+        self, dataset_path, split_path="data/miceTrainTestlist", split_number=1, training=True
     ):
         """ Extracts paths to sequences given the specified train / test split """
-        assert split_number in [1, 2, 3], "Split number has to be one of {1, 2, 3}"
+        assert split_number in [1], "Split number has to be one of {1, 2, 3}"
         fn = f"trainlist0{split_number}.txt" if training else f"testlist0{split_number}.txt"
         split_path = os.path.join(split_path, fn)
         with open(split_path) as file:
             lines = file.read().splitlines()
         sequence_paths = []
         for line in lines:
-            seq_name = line.split(".avi")[0]
+            seq_name = line.split(".mp4")[0]
             sequence_paths += [os.path.join(dataset_path, seq_name)]
         return sequence_paths
 
@@ -64,9 +64,8 @@ class Dataset(Dataset):
 
     def _pad_to_length(self, sequence):
         """ Pads the sequence to required sequence length """
-#        if not sequence:
-#    	    raise ValueError("The input sequence is empty")
-        print(sequence[0])
+        print("测试1", sequence)
+        left_pad = sequence[0]
         if self.sequence_length is not None:
             while len(sequence) < self.sequence_length:
                 sequence.insert(0, left_pad)
@@ -74,9 +73,12 @@ class Dataset(Dataset):
 
     def __getitem__(self, index):
         sequence_path = self.sequences[index % len(self)]
+        ### print("测试4", sequence_path)
         # Sort frame sequence based on frame number
+        ### print("测试3", glob.glob(f"{sequence_path}/*.jpg"))
         image_paths = sorted(glob.glob(f"{sequence_path}/*.jpg"), key=lambda path: self._frame_number(path))
         # Pad frames sequences shorter than `self.sequence_length` to length
+        print("测试2", image_paths)
         image_paths = self._pad_to_length(image_paths)
         if self.training:
             # Randomly choose sample interval and start frame

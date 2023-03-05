@@ -13,7 +13,7 @@ import datetime
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_path", type=str, default="data/UCF-101-frames", help="Path to UCF-101 dataset")
-    parser.add_argument("--split_path", type=str, default="data/ucfTrainTestlist", help="Path to train/test split")
+    parser.add_argument("--split_path", type=str, default="data/miceTrainTestlist", help="Path to train/test split")
     parser.add_argument("--split_number", type=int, default=1, help="train/test split number. One of {1, 2, 3}")
     parser.add_argument("--num_epochs", type=int, default=100, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=16, help="Size of each training batch")
