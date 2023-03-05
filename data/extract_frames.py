@@ -11,7 +11,7 @@ import datetime
 import argparse
 
 
-def extract_frames(video_path, time_left=0):
+def extract_frames(video_path):
     frames = []
     video = av.open(video_path)
     for frame in video.decode(0):
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     print(opt)
 
     time_left = 0
-    video_paths = glob.glob(os.path.join(opt.dataset_path, "*", "*.mp4"))
+    video_paths = glob.glob(os.path.join(opt.dataset_path, "*", "*.avi"))
     for i, video_path in enumerate(video_paths):
-        sequence_type, sequence_name = video_path.split(".mp4")[0].split("/")[-2:]
+        sequence_type, sequence_name = video_path.split(".avi")[0].split("/")[-2:]
         sequence_path = os.path.join(f"{opt.dataset_path}-frames", sequence_type, sequence_name)
 
         if os.path.exists(sequence_path):
@@ -39,7 +39,7 @@ if __name__ == "__main__":
         # Extract frames
         for j, frame in enumerate(
             tqdm.tqdm(
-                extract_frames(video_path, time_left),
+                extract_frames(video_path),
                 desc=f"[{i}/{len(video_paths)}] {sequence_name} : ETA {time_left}",
             )
         ):
