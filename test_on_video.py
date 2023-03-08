@@ -8,6 +8,8 @@ import tqdm
 from torchvision.utils import make_grid
 from PIL import Image, ImageDraw
 import skvideo.io
+import numpy as np
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -38,11 +40,17 @@ if __name__ == "__main__":
     labels = sorted(list(set(os.listdir(opt.dataset_path))))
 
     # Define model and load model checkpoint
-    #model = ConvLSTM(input_shape=input_shape, num_classes=len(labels), latent_dim=opt.latent_dim)
-    model = ConvLSTM(num_classes=len(labels), latent_dim=opt.latent_dim)
+    ### model = ConvLSTM(input_shape=input_shape, num_classes=len(labels), latent_dim=opt.latent_dim)
+    model = ConvLSTM(
+        num_classes=len(labels),
+        latent_dim=opt.latent_dim,
+        lstm_layers=1,
+        hidden_dim=1024,
+        bidirectional=True,
+        attention=True,
+    )
     model.to(device)
-    #model.load_state_dict(torch.load(opt.checkpoint_model))
-    model.load_state_dict(torch.load(opt.checkpoint_model), strict=False)
+    model.load_state_dict(torch.load(opt.checkpoint_model))
     model.eval()
 
     # Extract predictions
@@ -62,8 +70,20 @@ if __name__ == "__main__":
 
         output_frames += [frame]
 
-    # Create video from frames
-    writer = skvideo.io.FFmpegWriter("output.gif")
-    for frame in tqdm.tqdm(output_frames, desc="Writing to video"):
-        writer.writeFrame(np.array(frame))
-    writer.close()
+    # # Create video from frames
+    # writer = skvideo.io.FFmpegWriter("output.gif")
+    # for frame in tqdm.tqdm(output_frames, desc="Writing to video"):
+    #     writer.writeFrame(np.array(frame))
+    # writer.close()
+
+    # Create output folder if it does not exist
+    output_folder = "output"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+
+# Save output_frames as images
+    for i, frame in enumerate(output_frames):
+        frame_np = np.array(frame)
+        image = Image.fromarray(frame_np)
+        image.save(os.path.join(output_folder, f"frame_{i}.jpg"))
