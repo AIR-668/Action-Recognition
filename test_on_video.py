@@ -55,6 +55,12 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(opt.checkpoint_model))
     model.eval()
 
+    ### labels statistics
+    num_true_labels = 0
+    input_file = opt.video_path.split('/')
+    true_labels = input_file[2]
+    #print(type(opt.video_path), opt.video_path)
+
     # Extract predictions
     output_frames = []
     for frame in tqdm.tqdm(extract_frames(opt.video_path), desc="Processing frames"):
@@ -72,6 +78,18 @@ if __name__ == "__main__":
 
         output_frames += [frame]
 
+        ### Count correct predictions and save the result in text file
+        if true_labels == predicted_label:
+            num_true_labels += 1
+    # Save the result to a text file
+    output_file = "result.txt"
+    with open(output_file, "a") as file:
+        result = str(num_true_labels) + " " + str(len(output_frames))
+        file.write(result + "\n")
+
+    # Print a confirmation message
+    print(f"result of '{input_file[3]}' has been saved to {output_file}.")
+    ### print(num_true_labels, len(output_frames))
     # # Create video from frames
     # writer = skvideo.io.FFmpegWriter("output.gif")
     # for frame in tqdm.tqdm(output_frames, desc="Writing to video"):
