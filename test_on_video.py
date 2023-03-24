@@ -84,24 +84,24 @@ if __name__ == "__main__":
         os.makedirs(output_folder)
 
 
-# # Save output_frames as images
-#     for i, frame in enumerate(output_frames):
-#         frame_np = np.array(frame)
-#         image = Image.fromarray(frame_np)
-#         image.save(os.path.join(output_folder, f"frame_{i}.jpg"))
-
-    # Set up VideoWriter object
-    video_width, video_height = 640, 480
-    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-    video_writer = cv2.VideoWriter("output.avi", fourcc, 25.0, (video_width, video_height))
-
+# Save output_frames as images
     for i, frame in enumerate(output_frames):
-        # Convert PIL Image to numpy array
-        frame = np.array(frame)
-        # Resize frame to video size
-        frame = cv2.resize(frame, (video_width, video_height))
-        # Write frame to video file
-        video_writer.write(frame)
+        frame_np = np.array(frame)
+        image = Image.fromarray(frame_np)
+        image.save(os.path.join(output_folder, f"frame_{i}.jpg"))
 
-    # Release VideoWriter object
-    video_writer.release()
+    # # Set up VideoWriter object
+    # video_width, video_height = 640, 480
+    # fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    # video_writer = cv2.VideoWriter("output.mp4", fourcc, 25.0, (video_width, video_height))
+
+    # for i, frame in enumerate(output_frames):
+    #     # Convert PIL Image to numpy array
+    #     frame = np.array(frame)
+    #     # Resize frame to video size
+    #     frame = cv2.resize(frame, (video_width, video_height))
+    #     # Write frame to video file
+    #     video_writer.write(frame)
+
+    # # Release VideoWriter object
+    # video_writer.release()
