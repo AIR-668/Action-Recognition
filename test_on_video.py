@@ -8,6 +8,10 @@ import tqdm
 from torchvision.utils import make_grid
 from PIL import Image, ImageDraw
 import skvideo.io
+import numpy as np
+import cv2
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -38,12 +42,24 @@ if __name__ == "__main__":
     labels = sorted(list(set(os.listdir(opt.dataset_path))))
 
     # Define model and load model checkpoint
-    #model = ConvLSTM(input_shape=input_shape, num_classes=len(labels), latent_dim=opt.latent_dim)
-    model = ConvLSTM(num_classes=len(labels), latent_dim=opt.latent_dim)
+    ### model = ConvLSTM(input_shape=input_shape, num_classes=len(labels), latent_dim=opt.latent_dim)
+    model = ConvLSTM(
+        num_classes=len(labels),
+        latent_dim=opt.latent_dim,
+        lstm_layers=1,
+        hidden_dim=1024,
+        bidirectional=True,
+        attention=True,
+    )
     model.to(device)
-    #model.load_state_dict(torch.load(opt.checkpoint_model))
-    model.load_state_dict(torch.load(opt.checkpoint_model), strict=False)
+    model.load_state_dict(torch.load(opt.checkpoint_model))
     model.eval()
+
+    ### labels statistics
+    num_true_labels = 0
+    input_file = opt.video_path.split('/')
+    true_labels = input_file[2]
+    #print(type(opt.video_path), opt.video_path)
 
     # Extract predictions
     output_frames = []
@@ -62,8 +78,48 @@ if __name__ == "__main__":
 
         output_frames += [frame]
 
-    # Create video from frames
-    writer = skvideo.io.FFmpegWriter("output.gif")
-    for frame in tqdm.tqdm(output_frames, desc="Writing to video"):
-        writer.writeFrame(np.array(frame))
-    writer.close()
+        ### Count correct predictions and save the result in text file
+        if true_labels == predicted_label:
+            num_true_labels += 1
+    # Save the result to a text file
+    output_file = "result.txt"
+    with open(output_file, "a") as file:
+        result = str(num_true_labels) + " " + str(len(output_frames)) + " " + str(input_file[3])
+        file.write(result + "\n")
+
+    # Print a confirmation message
+    print(f"result of '{input_file[3]}' has been saved to {output_file}.")
+    ### print(num_true_labels, len(output_frames))
+    # # Create video from frames
+    # writer = skvideo.io.FFmpegWriter("output.gif")
+    # for frame in tqdm.tqdm(output_frames, desc="Writing to video"):
+    #     writer.writeFrame(np.array(frame))
+    # writer.close()
+
+    # Create output folder if it does not exist
+    output_folder = "output"
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+
+# Save output_frames as images
+    for i, frame in enumerate(output_frames):
+        frame_np = np.array(frame)
+        image = Image.fromarray(frame_np)
+        image.save(os.path.join(output_folder, f"frame_{i}.jpg"))
+
+    # # Set up VideoWriter object
+    # video_width, video_height = 640, 480
+    # fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    # video_writer = cv2.VideoWriter("output.mp4", fourcc, 25.0, (video_width, video_height))
+
+    # for i, frame in enumerate(output_frames):
+    #     # Convert PIL Image to numpy array
+    #     frame = np.array(frame)
+    #     # Resize frame to video size
+    #     frame = cv2.resize(frame, (video_width, video_height))
+    #     # Write frame to video file
+    #     video_writer.write(frame)
+
+    # # Release VideoWriter object
+    # video_writer.release()

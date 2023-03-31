@@ -2,3 +2,7 @@ data/
 data2/
 __pycache__
 model_checkpoints/
+output/
+*.mp4
+*.png
+*.txt
