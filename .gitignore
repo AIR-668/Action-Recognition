@@ -4,3 +4,5 @@ __pycache__
 model_checkpoints/
 output/
 *.mp4
+*.png
+*.txt

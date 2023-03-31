@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # Save the result to a text file
     output_file = "result.txt"
     with open(output_file, "a") as file:
-        result = str(num_true_labels) + " " + str(len(output_frames))
+        result = str(num_true_labels) + " " + str(len(output_frames)) + " " + str(input_file[3])
         file.write(result + "\n")
 
     # Print a confirmation message
